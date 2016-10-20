@@ -124,6 +124,7 @@ app.get ('/cart/add/:id', function (request, response) {
             // If no cart exists, create a new cart.
             if (!cart) {
                 cart = {
+                    total: 0,
                     itemList: []
                 };
 
@@ -133,6 +134,9 @@ app.get ('/cart/add/:id', function (request, response) {
 
             // Grab the item from the result list.
             var item = resultList;
+
+            // Add to the cart quantity.
+            cart.total = cart.total + item.price;
 
             // Add the product to the cart.
             cart.itemList.push (item);
@@ -154,6 +158,12 @@ app.get ('/cart/remove/:index', function (request, response) {
 
     var cart = request.session.cart;
 
+    var price = cart.itemList [0].price;
+    cart.total = cart.total - price;
+
+    console.log ('- Testing..................', cart.total);
+    console.log ('- Testing..................', price);
+    console.log ('- Testing..................', cart.total);
 
     // Redirect to the cart.
     response.redirect ('/cart');
@@ -166,12 +176,18 @@ app.get ('/cart', function (request, response) {
     // Create the cart if none exists.
     if (!cart) {
         cart = {
+            total: 0,
             itemList: []
         }
 
         // Save the cart to session.
         request.session.cart = cart;
     }
+
+    // Render the cart page.
+    // response.render ('cart.ejs', {cart: cart});
+
+    // var sendEmail = require (__dirname + '/send-email.js');
 
     // Send an email.
     sendEmail (
@@ -190,7 +206,6 @@ app.get ('/cart', function (request, response) {
 
 // req.params.?
 // req.query.?
-
 
 function sendEmail (email, callback) {
     var item, key, list;
@@ -226,11 +241,6 @@ function sendEmail (email, callback) {
                 personalizations: [
                     {
                         to: emailToList,
-                        // to: [
-                        //     {
-                        //         email: "ronbravo1701@gmail.com"
-                        //     }
-                        // ],
                         subject: email.subject
                     }
                 ],
