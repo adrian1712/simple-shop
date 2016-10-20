@@ -1,0 +1,32 @@
+
+body {
+    background-color: #b9b9b9;
+    font-family: sans-serif;
+    padding: 20px;
+}
+
+nav a {
+    display: block;
+    padding: 10px;
+}
+
+ul {
+    /* Remove the bullet points in the list item. */
+    list-style-type: none;
+    padding: 0;
+}
+
+.product-list .item {
+    background-color: #fff;
+    border: 1px solid #b0b0b0;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.cart-list .item {
+    background-color: #e8f1ff;
+    border: 3px solid #dfad17;
+    border-radius: 20px;
+    margin-bottom: 10px;
+    padding: 20px;
+}
