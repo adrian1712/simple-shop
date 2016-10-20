@@ -26,7 +26,7 @@ app.use (session ({
 }));
 
 var db;
-MongoClient.connect ('mongodb://localhost:27017/simple_shop', function (error, database) {
+MongoClient.connect ('mongodb://localhost:27017/rbravo_simple_shop', function (error, database) {
     // Check for error.
     if (error) {
         throw error;
@@ -89,3 +89,65 @@ app.get ('/product', function (request, response) {
         }
     });
 });
+
+app.get ('/cart/add/:id', function (request, response) {
+    console.log ('Item added by id: ' + request.params.id);
+
+    // console.log ('Item: ', MongoClient.ObjectID);
+    var objectId = request.params.id;
+
+    // Run a query to look for the product by id.
+    db.collection ('products').findOne (
+        // The type of document to search for.
+        {
+            // _id: MongoClient.ObjectID.createFromHexString (request.params.id)
+            name: objectId
+        },
+
+        // The fields of the found object to return.
+        // An empty JS literal object will return
+        // all of the object's fields.
+        {},
+
+        // Callback function to run when the query is done.
+        function (error, resultList) {
+
+            // Check for errors.
+            if (error) {
+                throw error;
+                response.redirect ('/error');
+            }
+
+            // Check if we have a shopping cart in the session.
+            var cart = request.session.cart;
+
+            // If no cart exists, create a new cart.
+            if (!cart) {
+                cart = {
+                    itemList: []
+                };
+
+                // Save the cart to the session.
+                request.session.cart = cart;
+            }
+
+            // Grab the item from the result list.
+            var item = resultList;
+
+            // Add the product to the cart.
+            cart.itemList.push (item);
+
+            // Respond with a simple message.
+            console.log ('--------------');
+            console.log ('result list: ', resultList);
+            console.log ('cart: ', cart);
+            console.log ('');
+
+            response.redirect ('/cart');
+        }
+    );
+});
+
+
+// req.params.?
+// req.query.?

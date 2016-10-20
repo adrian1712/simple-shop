@@ -15,7 +15,7 @@
             <% for (var i = 0; i < productList.length; i++) { %>
                 <li>
                     <div class="item">
-                        <a href="/cart/add/<%= productList [i]._id %>">Add to Cart</a>
+                        <a href="/cart/add/<%= productList [i].name %>">Add to Cart</a>
                         <strong>Name:</strong> <%= productList [i].name %><br>
                         <strong>Descrption:</strong> <%= productList [i].description %><br>
                         <strong>Price:</strong><%= productList [i].price %>
