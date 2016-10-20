@@ -80,14 +80,14 @@ app.get ('/product', function (request, response) {
 
             // Render the page once the query is done.
             response.render ('product-list.ejs',
-                {
-                    name: 'ron bravo',
-                    city: 'phoenix',
-                    productList: resultList
-                }
-            );
-        }
-    });
+            {
+                name: 'ron bravo',
+                city: 'phoenix',
+                productList: resultList
+            }
+        );
+    }
+});
 });
 
 app.get ('/cart/add/:id', function (request, response) {
@@ -148,6 +148,119 @@ app.get ('/cart/add/:id', function (request, response) {
     );
 });
 
+// Remove an indvidual item from the cart.
+app.get ('/cart/remove/:index', function (request, response) {
+    console.log ('remove item by index: ', request.params.index);
+
+    var cart = request.session.cart;
+
+
+    // Redirect to the cart.
+    response.redirect ('/cart');
+});
+
+app.get ('/cart', function (request, response) {
+    // Grab the shopping cart.
+    var cart = request.session.cart;
+
+    // Create the cart if none exists.
+    if (!cart) {
+        cart = {
+            itemList: []
+        }
+
+        // Save the cart to session.
+        request.session.cart = cart;
+    }
+
+    // Send an email.
+    sendEmail (
+        {
+            to: ['ronbravo1701@gmail.com'],
+            subject: 'Test Email',
+            content: 'Thanks for opening this email!'
+        },
+        function () {
+            // Render the cart page.
+            response.render ('cart.ejs', {cart: cart});
+        }
+    );
+});
+
 
 // req.params.?
 // req.query.?
+
+
+function sendEmail (email, callback) {
+    var item, key, list;
+    var emailToList = [];
+
+    // Get the recipients list.
+    list = email.to;
+    for (key in list) {
+        item = list [key];
+        emailToList.push ({
+            email: item
+        });
+    }
+    // Pull in the http request object used to make
+    // an HTTP request from our web server to another web server.
+    var request = require ('request');
+
+    // Send a POST request to the sendgrid email service.
+    console.log ('- Sending email to: ', emailToList);
+    request.post (
+        {
+            // The api call to post the request to.
+            url: 'https://api.sendgrid.com/v3/mail/send',
+
+            // The headers to send with the request.
+            headers: {
+                'Authorization': 'Bearer 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'
+            },
+
+            // The JSON / form data to send with the request.
+            json: {
+                // The email subject and recipients.
+                personalizations: [
+                    {
+                        to: emailToList,
+                        // to: [
+                        //     {
+                        //         email: "ronbravo1701@gmail.com"
+                        //     }
+                        // ],
+                        subject: email.subject
+                    }
+                ],
+
+                // From address.
+                from: {
+                    email: "no-reply@mydomain.com"
+                },
+
+                // The content to send in the body of the email.
+                content: [
+                    {
+                        type: "text/html",
+                        value: email.content
+                    }
+                ]
+            },
+        },
+
+        // The callback function to run when the email
+        // is sent.
+        function (error, httpResponse) {
+            console.log ('- Email sent');
+            if (error) {
+                throw error;
+            }
+
+            if (callback) {
+                callback.apply ();
+            }
+        }
+    );
+}

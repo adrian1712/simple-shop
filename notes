@@ -1,1 +1,19 @@
-npm install --save express ejs connect-flash body-parser express-session
+npm install --save express ejs connect-flash body-parser express-sessions
+
+
+Change the cart so that I can:
+    - Use a path to clear out the cart items.
+        - GET /cart/clear       clear out the cart items
+    - Remove individual items from it.
+        - GET /cart/remove/0
+        - GET /cart/remove/1
+        - GET /cart/remove/2
+        - GET /cart/remove/3
+        - GET /cart/remove/4
+        - GET /cart/remove/5
+
+    - Calculate the cart total everytime a new item is added to the cart.
+    - Checkout and pay for the items in my cart.
+        - GET /cart/confirm
+        - GET /cart/pay
+        - GET /cart/summary
