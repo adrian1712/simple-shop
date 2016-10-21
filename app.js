@@ -8,7 +8,9 @@ const bodyParser = require ('body-parser');
 
 const port = 5000;
 
-const MongoClient = require ('mongodb').MongoClient;
+const mongoDb = require ('mongodb');
+const ObjectId = mongoDb.ObjectID;
+const MongoClient = mongoDb.MongoClient;
 
 // Set the body parser.
 app.use (bodyParser.urlencoded ({extended: true}));
@@ -26,6 +28,7 @@ app.use (session ({
 }));
 
 var db;
+
 MongoClient.connect ('mongodb://localhost:27017/rbravo_simple_shop', function (error, database) {
     // Check for error.
     if (error) {
@@ -93,15 +96,18 @@ app.get ('/product', function (request, response) {
 app.get ('/cart/add/:id', function (request, response) {
     console.log ('Item added by id: ' + request.params.id);
 
-    // console.log ('Item: ', MongoClient.ObjectID);
-    var objectId = request.params.id;
+
+    // console.log ('Item: ', MongoClient);
+    // console.log ('Item: ', new ObjectId (request.params.id));
+    // var objectId = request.params.id;
 
     // Run a query to look for the product by id.
     db.collection ('products').findOne (
+
         // The type of document to search for.
         {
-            // _id: MongoClient.ObjectID.createFromHexString (request.params.id)
-            name: objectId
+            _id: new ObjectId (request.params.id)
+            // name: objectId
         },
 
         // The fields of the found object to return.
@@ -161,9 +167,9 @@ app.get ('/cart/remove/:index', function (request, response) {
     var price = cart.itemList [0].price;
     cart.total = cart.total - price;
 
-    console.log ('- Testing..................', cart.total);
-    console.log ('- Testing..................', price);
-    console.log ('- Testing..................', cart.total);
+    // console.log ('- Testing..................', cart.total);
+    // console.log ('- Testing..................', price);
+    // console.log ('- Testing..................', cart.total);
 
     // Redirect to the cart.
     response.redirect ('/cart');
